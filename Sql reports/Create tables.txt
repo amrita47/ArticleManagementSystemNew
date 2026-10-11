@@ -1,0 +1,57 @@
+ CREATE DATABASE ArticleManagementDB;
+
+
+USE ArticleManagementDB;
+GO
+
+-- 1. Users table
+
+    CREATE TABLE dbo.Users
+    (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Username VARCHAR(100) NOT NULL,
+        CreatedAt DATETIME2 NOT NULL
+            DEFAULT GETDATE()
+    );
+
+
+
+-- 2. Articles table
+    CREATE TABLE dbo.Articles
+    (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Status VARCHAR(20) NOT NULL
+            CHECK (Status IN
+                ('Draft', 'Published', 'Unpublished')),
+        CreatedAt DATETIME2 NOT NULL
+            DEFAULT GETDATE()
+    );
+
+
+-- 3. Contents table
+
+    CREATE TABLE dbo.Contents
+    (
+        Id INT IDENTITY(1,1) PRIMARY KEY,
+        Title VARCHAR(255) NOT NULL,
+        Content NVARCHAR(MAX) NULL,
+        Author INT NOT NULL,
+        Status VARCHAR(20) NULL
+            CHECK (Status IN
+                ('Draft', 'Published', 'Unpublished')),
+        CreatedAt DATETIME2 NOT NULL
+            DEFAULT GETDATE(),
+        Language VARCHAR(20) NULL
+            CHECK (Language IN
+                ('English', 'French', 'Spanish')),
+        ArticleId INT NOT NULL,
+
+        CONSTRAINT FK_Contents_Users
+            FOREIGN KEY (Author)
+            REFERENCES dbo.Users(Id),
+
+        CONSTRAINT FK_Contents_Articles
+            FOREIGN KEY (ArticleId)
+            REFERENCES dbo.Articles(Id)
+    );
+
